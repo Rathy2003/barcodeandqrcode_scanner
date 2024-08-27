@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,6 +42,8 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         qrcoderesult = result;
       });
+      if(result!="-1")
+        _showDiaglog(context);
     }on PlatformException{
 
     }
@@ -53,8 +56,39 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         qrcoderesult = result;
       });
+      if(result!="-1")
+        _showDiaglog(context);
     }on PlatformException{
 
+    }
+  }
+
+  Future<void> _showDiaglog(BuildContext context)async {
+  return showDialog(context: context, builder: (context) {
+    return AlertDialog(
+      title: Text(""),
+      content: Text(qrcoderesult),
+      actions: [
+        TextButton(
+            onPressed: (){
+              Navigator.pop(context);
+            },
+            child: Text("Close")
+        ),
+        TextButton(
+            onPressed: (){
+              _launchUrl(Uri.parse(qrcoderesult));
+            },
+            child: Text("Open")
+        )
+      ],
+    );
+  });
+  }
+
+  Future<void> _launchUrl(Uri _url) async {
+    if (!await launchUrl(_url)) {
+      throw Exception('Could not launch $_url');
     }
   }
 
